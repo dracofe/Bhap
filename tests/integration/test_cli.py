@@ -14,7 +14,7 @@ class CliTests(BhapTestCase):
     def bhap(self, *args, stdin=None, home=None, check=None):
         env = dict(os.environ, PYTHONPATH=SRC, BHAP_HOME=str(home or os.environ["BHAP_HOME"]))
         env.pop("FORCE_COLOR", None)
-        proc = subprocess.run([sys.executable, "-m", "bhap", *args], input=stdin, capture_output=True, text=True,
+        proc = subprocess.run([sys.executable, "-m", "bhap", *args], input=stdin, capture_output=True, encoding="utf-8", errors="replace",
                               env=env, cwd=self.root, timeout=120)
         if check is not None:
             self.assertEqual(proc.returncode, check, f"{args}\nstdout:{proc.stdout}\nstderr:{proc.stderr}")
@@ -78,7 +78,7 @@ class CliTests(BhapTestCase):
         self.assertEqual(err["exit_code"], 2)
         self.assertEqual(self.bhap("doctor", "--offline", check=0).returncode, 0)
         dead = dict(os.environ, BHAP_OLLAMA_URL="http://127.0.0.1:9")
-        proc = subprocess.run([sys.executable, "-m", "bhap", "doctor", "--json"], capture_output=True, text=True,
+        proc = subprocess.run([sys.executable, "-m", "bhap", "doctor", "--json"], capture_output=True, encoding="utf-8", errors="replace",
                               env=dict(dead, PYTHONPATH=SRC), timeout=60)
         self.assertEqual(proc.returncode, 3)
         self.assertFalse(json.loads(proc.stdout)["ok"])
@@ -95,7 +95,7 @@ class CliTests(BhapTestCase):
         self.bhap("add", str(self.files / "a.md"), check=0)
         other = self.root / "other-home"
         self.bhap("config", "set", "language", "id", home=other, check=0)
-        proc = subprocess.run([sys.executable, "-m", "bhap", "model", "use", "fake-chat"], capture_output=True, text=True,
+        proc = subprocess.run([sys.executable, "-m", "bhap", "model", "use", "fake-chat"], capture_output=True, encoding="utf-8", errors="replace",
                               env=dict(os.environ, PYTHONPATH=SRC, BHAP_HOME=str(other)), timeout=60)
         self.assertEqual(proc.returncode, 0, proc.stderr)
         status = json.loads(self.bhap("status", "--json", home=other, check=0).stdout)

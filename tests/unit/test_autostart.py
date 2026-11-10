@@ -1,4 +1,5 @@
 import os
+import shlex
 import socket
 import stat
 import sys
@@ -25,7 +26,7 @@ class AutostartTests(BhapTestCase):
         bindir = self.root / "bin"
         bindir.mkdir()
         script = bindir / "ollama"
-        script.write_text(f"#!/bin/sh\nexec {sys.executable} {FAKE}\n")
+        script.write_text(f"#!/bin/sh\nexec {shlex.quote(sys.executable)} {shlex.quote(str(FAKE))}\n")
         script.chmod(script.stat().st_mode | stat.S_IEXEC)
         self.port = free_port()
         self.env2 = patch.dict(os.environ, {"PATH": f"{bindir}{os.pathsep}{os.environ['PATH']}",
@@ -43,7 +44,9 @@ class AutostartTests(BhapTestCase):
         if os.name == "nt":
             self.skipTest("POSIX shell script fake")
         notified = []
-        self.assertEqual(autostart.ensure_running(config.load(), notify=notified.append), "started")
+        result = autostart.ensure_running(config.load(), wait=120, notify=notified.append)  # slow CI runners
+        log = config.home() / "logs" / "ollama.log"
+        self.assertEqual(result, "started", log.read_text(errors="replace")[-2000:] if log.exists() else "no log")
         self.assertEqual(notified, [f"127.0.0.1:{self.port}"])
         self.assertTrue(autostart.started_by_bhap())
         self.assertEqual(autostart.ensure_running(config.load()), "running")

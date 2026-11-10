@@ -35,10 +35,24 @@ menyimpan data dalam tabel dengan primary key dan foreign key [2].
 
 ## Install
 
-Prerequisites: Git, Python 3.10+, and a local model runtime ([Ollama](https://ollama.com/download) recommended).
+**One line (Linux, macOS)** — installs Bhap as an isolated tool, Ollama without sudo if missing, then lets you pick models. Every download asks first:
 
 ```sh
-git clone https://github.com/<owner>/bhap.git && cd bhap
+curl -fsSL https://raw.githubusercontent.com/dracofe/Bhap/main/scripts/install.sh | sh
+```
+
+**With uv or pipx** (any OS, including Windows):
+
+```sh
+uv tool install "bhap-ai[all] @ git+https://github.com/dracofe/Bhap"
+# or: pipx install "bhap-ai[all] @ git+https://github.com/dracofe/Bhap"
+bhap setup
+```
+
+**From source** (for development) — prerequisites: Git, Python 3.10+, and a local model runtime ([Ollama](https://ollama.com/download) recommended).
+
+```sh
+git clone https://github.com/dracofe/Bhap.git && cd Bhap
 python -m venv .venv
 source .venv/bin/activate            # Windows PowerShell: .venv\Scripts\Activate.ps1
 python -m pip install -e ".[all]"    # or just `-e .` for the minimal install

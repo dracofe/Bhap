@@ -18,6 +18,12 @@ All notable changes follow [Semantic Versioning](https://semver.org/).
 
 ### Changed
 - `prompt_toolkit==3.0.52` is now a required (pure-Python) dependency.
+- Output is always UTF-8 (fixes crashes on Windows consoles/pipes using cp1252).
+- `bhap setup --yes` without model names picks the hardware recommendation, preferring models already installed.
+
+### Distribution
+- `scripts/install.sh`: one-line installer (uv tool + optional user-local Ollama + model setup, consent per download).
+- `.github/workflows/release.yml`: tag `vX.Y.Z` → wheel on a GitHub Release, optional PyPI upload via trusted publishing.
 
 ## 1.0.0 — 2026-11-06
 

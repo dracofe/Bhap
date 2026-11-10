@@ -87,6 +87,14 @@ def cmd_setup(args):
         if not rt.has_model(wanted) and args.download:
             _pull(rt, wanted, assume_yes=args.yes)
     models = rt.models()
+    if args.yes:  # unattended: take the hardware recommendation, preferring models already installed
+        for attr, key in (("llm", "llm"), ("embedding", "embedding")):
+            if not getattr(args, attr):
+                installed = [m for m in rec[key] if rt.has_model(m)]
+                setattr(args, attr, (installed or rec[key])[0])
+                if not installed and args.download:
+                    _pull(rt, getattr(args, attr), assume_yes=True)
+        models = rt.models()
     interactive = sys.stdin.isatty() and not (args.llm and args.embedding)
     if not models:
         ui.warn(tr("Belum ada model di runtime lokal.", "No models in the local runtime yet."))

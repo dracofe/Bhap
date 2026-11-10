@@ -5,8 +5,8 @@
 ## 1. Python package
 
 ```sh
-git clone https://github.com/<owner>/bhap.git
-cd bhap
+git clone https://github.com/dracofe/Bhap.git
+cd Bhap
 python -m venv .venv
 source .venv/bin/activate          # fish: source .venv/bin/activate.fish · PowerShell: .venv\Scripts\Activate.ps1
 python -m pip install -e ".[all]"  # minimal: python -m pip install -e .

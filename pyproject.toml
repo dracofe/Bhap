@@ -44,7 +44,10 @@ dev = ["ruff>=0.6", "numpy>=1.24", "cryptography>=42"]
 bhap = "bhap.cli:main"
 
 [project.urls]
-Documentation = "https://github.com/<owner>/bhap/tree/main/docs"
+Homepage = "https://github.com/dracofe/Bhap"
+Documentation = "https://github.com/dracofe/Bhap/tree/main/docs"
+Issues = "https://github.com/dracofe/Bhap/issues"
+Changelog = "https://github.com/dracofe/Bhap/blob/main/CHANGELOG.md"
 
 [tool.setuptools.packages.find]
 where = ["src"]
