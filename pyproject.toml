@@ -1,0 +1,62 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "bhap-ai"
+version = "1.1.0"
+description = "Private, offline, terminal-first knowledge assistant: local RAG over your PDF/DOCX/PPTX/MD/TXT with verified citations"
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.10"
+authors = [{ name = "Bhap contributors" }]
+keywords = ["rag", "offline", "llm", "ollama", "cli", "knowledge-base", "study", "privacy"]
+classifiers = [
+  "Development Status :: 5 - Production/Stable",
+  "Environment :: Console",
+  "Intended Audience :: Education",
+  "Intended Audience :: End Users/Desktop",
+  "License :: OSI Approved :: MIT License",
+  "Natural Language :: Indonesian",
+  "Natural Language :: English",
+  "Operating System :: POSIX :: Linux",
+  "Operating System :: MacOS",
+  "Operating System :: Microsoft :: Windows",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
+  "Topic :: Education",
+  "Topic :: Text Processing :: Indexing",
+]
+# Required third-party dependencies, pinned to the tested versions (both pure Python).
+dependencies = ["pypdf==6.21.4", "prompt_toolkit==3.0.52"]
+
+[project.optional-dependencies]
+fast = ["numpy>=1.24"]            # faster vector search on large collections
+crypto = ["cryptography>=42"]     # encrypted backups (bhap backup create --encrypt)
+all = ["numpy>=1.24", "cryptography>=42"]
+dev = ["ruff>=0.6", "numpy>=1.24", "cryptography>=42"]
+
+[project.scripts]
+bhap = "bhap.cli:main"
+
+[project.urls]
+Documentation = "https://github.com/<owner>/bhap/tree/main/docs"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.ruff]
+line-length = 130
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "B", "UP"]
+ignore = ["E501", "B008", "B904", "B905", "UP015", "UP034"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["tests"]

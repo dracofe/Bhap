@@ -1,0 +1,67 @@
+name: CI
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  pull_request:
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install ruff
+      - run: ruff check src tests
+
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python-version: ["3.10", "3.13"]
+        extras: ["", "[all]"]
+        exclude:
+          - { os: windows-latest, extras: "" }
+          - { os: macos-latest, extras: "" }
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install (editable, from the clone)
+        run: python -m pip install -e ".${{ matrix.extras }}"
+      - name: Unit, integration and offline tests (fake local runtime, no real model needed)
+        run: python -m unittest discover -s tests -v
+      - name: CLI smoke test
+        shell: bash
+        env:
+          BHAP_HOME: ${{ runner.temp }}/bhap-smoke
+        run: |
+          bhap --help
+          bhap --version
+          bhap status --json
+          bhap doctor --json || test $? -eq 3   # no runtime in CI: must fail with exit code 3, not crash
+
+  build:
+    needs: [lint, test]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install build
+      - run: python -m build
+      - name: Install the wheel in a clean venv and run it
+        run: |
+          python -m venv /tmp/wheel-venv
+          /tmp/wheel-venv/bin/pip install dist/*.whl
+          BHAP_HOME=/tmp/wheel-home /tmp/wheel-venv/bin/bhap --version
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
