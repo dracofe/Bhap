@@ -99,7 +99,7 @@ class SlashAndPathCompleter(Completer):
 
 
 class Tui:
-    def __init__(self, session):
+    def __init__(self, session, output=None):
         self.session = session
         self.style = Style.from_dict(STYLE)
         history = InMemoryHistory()
@@ -120,7 +120,8 @@ class Tui:
 
         self.prompt_session = PromptSession(history=history, completer=SlashAndPathCompleter(session),
                                             complete_while_typing=True, key_bindings=bindings, style=self.style,
-                                            reserve_space_for_menu=0, mouse_support=False, erase_when_done=True)
+                                            reserve_space_for_menu=0, mouse_support=False, erase_when_done=True,
+                                            output=output)
         self.state = None
 
     # ------------------------------------------------------------------ helpers

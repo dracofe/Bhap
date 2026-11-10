@@ -292,6 +292,8 @@ class Session:
             tokens = shlex.split(line, posix=os.name != "nt")
         except ValueError:
             tokens = [line]
+        tokens = [token.strip('"').strip("'") for token in tokens]  # non-POSIX shlex keeps the quotes
+        tokens = [token for token in tokens if token]
         if not tokens:
             return False
         whole = line.strip().strip('"').strip("'")

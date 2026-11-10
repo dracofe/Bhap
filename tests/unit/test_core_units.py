@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 import socket
 import unittest
 
@@ -131,7 +132,8 @@ class ConfigTests(BhapTestCase):
 
     def test_bhap_home_isolation_and_private_permissions(self):
         config.update(top_k=9)
-        self.assertTrue(str(config.config_file()).startswith(os.environ["BHAP_HOME"]))
+        home = Path(os.environ["BHAP_HOME"]).resolve()
+        self.assertIn(home, config.config_file().resolve().parents)
         if os.name != "nt":
             self.assertEqual(config.config_file().stat().st_mode & 0o777, 0o600)
 

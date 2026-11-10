@@ -115,7 +115,8 @@ class ReplTests(BhapTestCase):
         from bhap import tui
         if not tui.AVAILABLE:
             self.skipTest("prompt_toolkit not installed")
-        view = tui.Tui(self.session)
+        from prompt_toolkit.output import DummyOutput
+        view = tui.Tui(self.session, output=DummyOutput())
         view.refresh_state()
         toolbar = "".join(text for _, text in view._toolbar())
         self.assertIn("/upload", toolbar)

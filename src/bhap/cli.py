@@ -313,7 +313,19 @@ def _strip_globals(argv):
     return cleaned
 
 
+def _utf8_streams():
+    """Windows pipes/consoles may default to cp1252 and crash on ●, →, —; always emit UTF-8."""
+    for stream in (sys.stdout, sys.stderr):
+        encoding = (getattr(stream, "encoding", None) or "").lower().replace("-", "")
+        if encoding != "utf8" and hasattr(stream, "reconfigure"):
+            try:
+                stream.reconfigure(encoding="utf-8", errors="replace")
+            except (ValueError, OSError):
+                pass
+
+
 def main(argv=None):
+    _utf8_streams()
     netguard.install()  # offline by construction: only loopback connections are possible
     argv = sys.argv[1:] if argv is None else argv
     pre = argparse.ArgumentParser(add_help=False)
