@@ -209,6 +209,15 @@ def build_parser():
     s.add_argument("--as", dest="as_name", help=tr("pulihkan dengan nama workspace baru", "restore under a new workspace name"))
     _json(s)
 
+    s = sub.add_parser("app", help=tr("buka aplikasi desktop Bhap (jendela)", "open the Bhap desktop app (window)"))
+    s.add_argument("--window", choices=["auto", "native", "chromium", "browser"], default="auto",
+                   help=tr("jenis jendela", "window type"))
+    s.add_argument("--port", type=int, default=0)
+    s.add_argument("--no-window", action="store_true", help=tr("hanya jalankan server, cetak URL", "server only, print the URL"))
+    s.add_argument("--print-url", action="store_true")
+    s.add_argument("--install-shortcut", action="store_true",
+                   help=tr("tambahkan Bhap ke menu aplikasi (Linux)", "add Bhap to the application menu (Linux)"))
+
     s = sub.add_parser("graph", help=tr("peta pengetahuan: dokumen → bagian → konsep bersama",
                                         "knowledge map: documents → sections → shared concepts"))
     s.add_argument("--format", choices=["text", "mermaid", "dot", "json"], default="text")
@@ -248,13 +257,13 @@ def build_parser():
     return p
 
 
-NEEDS_RUNTIME = {None, "chat", "ask", "search", "add", "docs", "summarize", "compare", "study", "setup", "doctor",
+NEEDS_RUNTIME = {None, "chat", "app", "ask", "search", "add", "docs", "summarize", "compare", "study", "setup", "doctor",
                  "watch", "jobs", "model"}
 
 
 def _autostart(args):
     """Bring up the local model runtime for commands that need it (no-op if already running)."""
-    if args.command not in NEEDS_RUNTIME:
+    if args.command not in NEEDS_RUNTIME or getattr(args, "install_shortcut", False):
         return
     from .adapters import autostart
     json_mode = getattr(args, "json", False)
@@ -282,6 +291,9 @@ def dispatch(args):
             recover_jobs(conn)
             run(conn, args)
         return 0
+    if command == "app":
+        from .web import app
+        return app.install_shortcut() if args.install_shortcut else app.run(args)
     from .commands import backup_cmd, library, qa, study_cmd, system
     table = {
         "setup": system.cmd_setup, "doctor": system.cmd_doctor, "status": system.cmd_status,

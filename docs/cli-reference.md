@@ -30,6 +30,7 @@ positional arguments:
     history             local conversation history
     model               list/choose/download local models
     backup              portable packs: backup/restore
+    app                 open the Bhap desktop app (window)
     graph               knowledge map: documents → sections → shared concepts
     jobs                indexing jobs (restart safe)
     watch               watch folders & index changes
@@ -387,6 +388,22 @@ options:
   --encrypt
   --as AS_NAME          restore under a new workspace name
   --json                stable JSON output (no colors/spinners)
+```
+
+## bhap app
+
+```text
+usage: bhap app [-h] [--window {auto,native,chromium,browser}] [--port PORT] [--no-window]
+                [--print-url] [--install-shortcut]
+
+options:
+  -h, --help            show this help message and exit
+  --window {auto,native,chromium,browser}
+                        window type
+  --port PORT
+  --no-window           server only, print the URL
+  --print-url
+  --install-shortcut    add Bhap to the application menu (Linux)
 ```
 
 ## bhap graph

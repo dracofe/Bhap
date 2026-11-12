@@ -16,7 +16,8 @@ from .. import config
 from ..errors import ParseError, UsageError
 from ..i18n import t
 from ..logs import log
-from ..parsers import LEGACY, PARSER_VERSION, SUPPORTED, parse_file
+from ..parsers import FORMATS_HELP, PARSER_VERSION, SUPPORTED, kind_of, parse_file
+from ..parsers.common import looks_secret, sniff
 from ..storage import transaction
 from .chunking import chunk
 from .embedder import Embedder
@@ -60,13 +61,19 @@ def scan(raw_paths, cwd=None, recursive=False, exclude=(), max_mb=None):
             return None
         if any(fnmatch.fnmatch(item.name, pattern) or fnmatch.fnmatch(str(item), pattern) for pattern in exclude):
             return skip("excluded", item)
-        suffix = item.suffix.lower()
-        if suffix not in SUPPORTED:
+        kind = kind_of(item.name)
+        if not explicit and looks_secret(item.name):
+            return skip("secret-like", item)  # .env, private keys … only when named explicitly
+        if kind not in SUPPORTED:
             if explicit:
-                if suffix in LEGACY:
-                    raise ParseError(f"{item.name}: legacy {suffix} — convert to {LEGACY[suffix]} locally first")
-                raise UsageError(t("repl.unsupported_file", file=item.name, formats=", ".join(sorted(SUPPORTED))))
-            return skip("legacy" if suffix in LEGACY else "unsupported", item)
+                try:
+                    textual = sniff(item) == "text"
+                except OSError:
+                    textual = False
+                if not textual:
+                    raise UsageError(t("repl.unsupported_file", file=item.name, formats=FORMATS_HELP))
+            else:
+                return skip("unsupported", item)
         if not explicit and item.is_symlink():
             return skip("symlink", item)
         if data_root in resolved.parents:
@@ -254,7 +261,7 @@ class Ingestor:
         self.progress("embedding", {"file": path.name, "done": 0, "total": len(items)})
         vectors, cached = self.embedder.documents(items, on_progress)
 
-        kind = path.suffix.lower().lstrip(".")
+        kind = kind_of(path.name).lstrip(".") or "txt"
         warnings = json.dumps(parsed.get("warnings", []), ensure_ascii=False)
         with transaction(self.conn):
             if existing:
@@ -341,8 +348,8 @@ def remove(conn, wid, doc_id):
         conn.execute("UPDATE jobs SET document_id=NULL WHERE document_id=?", (doc_id,))
     if row["stored_path"]:
         Path(row["stored_path"]).unlink(missing_ok=True)
-    inbox = config.home() / "workspaces" / str(wid) / "inbox"
-    if Path(row["original_path"]).parent == inbox:
+    owned = {config.home() / "workspaces" / str(wid) / name for name in ("inbox", "uploads")}
+    if Path(row["original_path"]).parent in owned:  # files Bhap itself received (stdin / app uploads)
         Path(row["original_path"]).unlink(missing_ok=True)
     log("docs.removed", id=doc_id)
     return row

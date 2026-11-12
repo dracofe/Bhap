@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bhap</title>
+  <link rel="icon" href="bhap.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="app.css">
+</head>
+<body>
+  <div class="app" id="app">
+    <aside class="sidebar" id="sidebar">
+      <div class="side-top">
+        <div class="brand"><img src="bhap.svg" alt="" class="brand-logo"><span>Bhap</span></div>
+        <button class="icon-btn" id="collapse" title="Sembunyikan panel" aria-label="Sembunyikan panel">
+          <svg viewBox="0 0 24 24"><rect x="3.5" y="4.5" width="17" height="15" rx="2.5"/><path d="M9 4.5v15"/></svg>
+        </button>
+      </div>
+      <div class="segmented" role="tablist">
+        <button class="seg active" data-view="home" id="seg-chat">Chat</button>
+        <button class="seg" data-view="docs" id="seg-docs">Dokumen</button>
+      </div>
+      <nav class="nav">
+        <button class="nav-item" id="nav-new"><span class="nav-plus">+</span><span data-i18n="new">Chat baru</span></button>
+        <button class="nav-item" id="nav-chats">
+          <svg viewBox="0 0 24 24"><path d="M5 18.5V7a2.5 2.5 0 0 1 2.5-2.5h9A2.5 2.5 0 0 1 19 7v6.5a2.5 2.5 0 0 1-2.5 2.5H9z"/></svg>
+          <span data-i18n="chats">Riwayat chat</span></button>
+        <button class="nav-item" id="nav-docs">
+          <svg viewBox="0 0 24 24"><path d="M7 3.5h7l4 4V20a.5.5 0 0 1-.5.5h-10A.5.5 0 0 1 7 20z"/><path d="M14 3.5V8h4"/></svg>
+          <span data-i18n="docs">Dokumen</span></button>
+        <button class="nav-item" id="nav-upload">
+          <svg viewBox="0 0 24 24"><path d="M12 16V5m0 0-4 4m4-4 4 4"/><path d="M5 15v3.5A1.5 1.5 0 0 0 6.5 20h11a1.5 1.5 0 0 0 1.5-1.5V15"/></svg>
+          <span data-i18n="upload">Unggah materi</span></button>
+      </nav>
+      <div class="recents-title" data-i18n="recents">Terbaru</div>
+      <div class="recents" id="recents"></div>
+      <button class="account" id="account">
+        <span class="avatar" id="ws-avatar">P</span>
+        <span class="account-text"><span class="account-name" id="ws-name">personal</span>
+          <span class="account-sub" id="ws-sub">…</span></span>
+        <svg viewBox="0 0 24 24" class="chev"><path d="m8 10 4-4 4 4M8 14l4 4 4-4"/></svg>
+      </button>
+      <div class="menu hidden" id="account-menu"></div>
+    </aside>
+
+    <main class="main" id="main">
+      <div class="topbar">
+        <button class="icon-btn show-side hidden" id="expand" title="Tampilkan panel" aria-label="Tampilkan panel">
+          <svg viewBox="0 0 24 24"><rect x="3.5" y="4.5" width="17" height="15" rx="2.5"/><path d="M9 4.5v15"/></svg>
+        </button>
+        <div class="topbar-title" id="topbar-title"></div>
+        <button class="icon-btn" id="theme" title="Tema terang/gelap" aria-label="Tema">
+          <svg viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg>
+        </button>
+      </div>
+
+      <section class="view home" id="view-home">
+        <div class="home-inner">
+          <button class="pill" id="status-pill"><span class="dot"></span><span id="status-text">…</span>
+            <span class="pill-sep">·</span><span class="pill-link" data-i18n="manage">Kelola dokumen</span></button>
+          <h1 class="greeting"><img src="bhap.svg" alt="" class="greet-logo"><span id="greeting">Selamat datang</span></h1>
+          <div id="home-composer-slot"></div>
+          <button class="upload-strip" id="upload-strip">
+            <span data-i18n="strip">Unggah materi, kode, atau arsip — semuanya diproses di laptop ini</span>
+            <span class="badges"><b>PDF</b><b>DOCX</b><b>XLSX</b><b>ZIP</b><b>{ }</b></span><span class="strip-chev">›</span>
+          </button>
+          <div class="notice hidden" id="home-notice"></div>
+        </div>
+      </section>
+
+      <section class="view chat hidden" id="view-chat">
+        <div class="thread" id="thread"></div>
+        <div class="dock" id="dock-composer-slot"></div>
+      </section>
+
+      <section class="view list hidden" id="view-chats">
+        <div class="list-inner">
+          <h2 data-i18n="chats">Riwayat chat</h2>
+          <input class="search" id="chat-search" placeholder="Cari percakapan…">
+          <div id="chat-list"></div>
+        </div>
+      </section>
+
+      <section class="view list hidden" id="view-docs">
+        <div class="list-inner">
+          <div class="list-head"><h2 data-i18n="docs">Dokumen</h2>
+            <button class="btn primary" id="docs-upload">+ <span data-i18n="upload">Unggah materi</span></button></div>
+          <p class="muted" data-i18n="docs-hint">Materi diindeks di laptop ini. Seret file ke jendela ini untuk mengunggah.</p>
+          <div id="doc-list"></div>
+        </div>
+      </section>
+
+      <div class="composer" id="composer">
+        <div class="slash hidden" id="slash"></div>
+        <textarea id="input" rows="1" placeholder="Tanya apa saja tentang materimu… ketik / untuk perintah"></textarea>
+        <div class="composer-row">
+          <button class="icon-btn round" id="attach" title="Unggah file" aria-label="Unggah file">
+            <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
+          <div class="scope hidden" id="scope"></div>
+          <div class="spacer"></div>
+          <div class="mode-wrap">
+            <button class="mode-btn" id="mode-btn"><span id="mode-label">Hanya sumber</span>
+              <svg viewBox="0 0 24 24"><path d="m7 10 5 5 5-5"/></svg></button>
+            <div class="menu up hidden" id="mode-menu"></div>
+          </div>
+          <button class="send" id="send" title="Kirim (Enter)" aria-label="Kirim">
+            <svg viewBox="0 0 24 24" class="i-send"><path d="M12 19V5m0 0-6 6m6-6 6 6"/></svg>
+            <svg viewBox="0 0 24 24" class="i-stop"><rect x="7" y="7" width="10" height="10" rx="1.5"/></svg>
+          </button>
+        </div>
+      </div>
+    </main>
+
+    <aside class="drawer hidden" id="drawer">
+      <div class="drawer-head"><div><div class="drawer-file" id="drawer-file"></div>
+        <div class="drawer-loc" id="drawer-loc"></div></div>
+        <button class="icon-btn" id="drawer-close" aria-label="Tutup"><svg viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div>
+      <div class="drawer-note muted" data-i18n="extracted">Teks hasil ekstraksi dari dokumen (bukan tampilan visual aslinya).</div>
+      <div class="drawer-warn hidden" id="drawer-warn"></div>
+      <div class="drawer-body" id="drawer-body"></div>
+      <button class="btn" id="drawer-open" data-i18n="open-original">Buka file asli</button>
+    </aside>
+  </div>
+
+  <div class="dropzone hidden" id="dropzone"><div><img src="bhap.svg" alt=""><p data-i18n="drop">Lepaskan file untuk mengunggah</p></div></div>
+  <div class="toasts" id="toasts"></div>
+  <input type="file" id="file" multiple hidden>
+  <script src="app.js"></script>
+</body>
+</html>

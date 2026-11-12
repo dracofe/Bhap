@@ -23,7 +23,7 @@ from .commands.qa import answer_question, build_scope
 from .core import history, ingest, library, retrieval
 from .errors import BhapError, ModelError, NetworkBlockedError
 from .i18n import set_language, t, tr
-from .parsers import SUPPORTED
+from .parsers import SUPPORTED, kind_of
 
 try:
     import readline
@@ -282,7 +282,7 @@ class Session:
     @staticmethod
     def looks_like_path(token):
         return (token.startswith(("./", "../", "~/", "~\\", ".\\", "..\\", "/")) or WINDOWS_PATH.match(token) is not None
-                or (Path(token).suffix.lower() in SUPPORTED | {".doc", ".ppt"} and " " not in token.strip()))
+                or (kind_of(token) in SUPPORTED and " " not in token.strip()))
 
     def try_paths(self, line):
         """Steps 3: input that is a path (or several pasted paths). Returns True if handled."""
@@ -301,7 +301,7 @@ class Session:
         paths = [self.resolve(token) for token in candidates]
         if all(exists(path) for path in paths):
             explicit = all(self.looks_like_path(token) or os.sep in token
-                           or Path(token).suffix.lower() in SUPPORTED for token in candidates)
+                           or kind_of(token) in SUPPORTED for token in candidates)
             if not explicit:
                 if len(candidates) > 1 or not ui.confirm(t("repl.ambiguous", text=whole)):
                     return False
@@ -347,7 +347,7 @@ class Session:
                     continue
                 if entry.is_dir():
                     ui.out(ui.style(entry.name + "/", "blue", "bold"))
-                elif entry.suffix.lower() in SUPPORTED:
+                elif kind_of(entry.name) in SUPPORTED:
                     ui.out(ui.style(entry.name, "green"))
                 else:
                     ui.out(ui.style(entry.name, "gray"))

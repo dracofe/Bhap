@@ -54,17 +54,37 @@ def _table_windows(text, words):
     return pieces
 
 
+def _code_windows(text, budget, overlap_lines=3):
+    """Split code by whole lines (formatting preserved); yields (line_offset, text)."""
+    lines = text.split("\n")
+    if len(text.split()) <= budget * 1.4:
+        yield 0, text
+        return
+    start = 0
+    while start < len(lines):
+        count, end = 0, start
+        while end < len(lines) and (count + len(lines[end].split()) <= budget or end == start):
+            count += len(lines[end].split())
+            end += 1
+        piece = "\n".join(lines[start:end])
+        if piece.strip():
+            yield start, piece
+        if end >= len(lines):
+            break
+        start = max(start + 1, end - overlap_lines)
+
+
 def chunk(blocks, words=220, overlap=40):
     """Yield chunk dicts carrying the block's locator metadata."""
     ordinal = 0
     small = None  # merge consecutive tiny text blocks of the same section/page
 
-    def emit(block, text):
+    def emit(block, text, line=None):
         nonlocal ordinal
         ordinal += 1
-        clean = text.strip()
+        clean = text.strip("\n") if block.get("kind") == "code" else text.strip()
         return {"ordinal": ordinal, "text": clean, "page_no": block.get("page"), "slide_no": block.get("slide"),
-                "line_no": block.get("line"), "section_path": block.get("section") or "",
+                "line_no": line or block.get("line"), "section_path": block.get("section") or "",
                 "kind": block.get("kind", "text"), "approx": bool(block.get("approx")),
                 "visual": bool(block.get("visual")), "ocr_conf": block.get("ocr_conf"),
                 "text_hash": hashlib.sha256(clean.encode("utf-8")).hexdigest(),
@@ -92,6 +112,9 @@ def chunk(blocks, words=220, overlap=40):
         if block.get("kind") == "table":
             for piece in _table_windows(text, words):
                 yield emit(block, piece)
+        elif block.get("kind") == "code":
+            for offset, piece in _code_windows(block.get("text") or "", int(words * 1.5)):
+                yield emit(block, piece, (block.get("line") or 1) + offset)
         else:
             for piece in _windows(text, words, overlap):
                 if piece.strip():

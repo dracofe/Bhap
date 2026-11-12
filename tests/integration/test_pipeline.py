@@ -208,7 +208,7 @@ class PipelineTests(BhapTestCase):
         (root / "bab1" / "a.md").write_text("isi")
         (root / "empty.txt").write_text("")
         (root / "big.txt").write_bytes(b"x" * (6 * 1024 * 1024))
-        (root / "image.png").write_bytes(b"\x89PNG")
+        (root / "program.exe").write_bytes(b"MZ\x90\x00" * 10)
         outside = self.root / "outside"
         outside.mkdir()
         (outside / "leak.md").write_text("private")

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "bhap-ai"
-version = "1.1.0"
+version = "1.2.0"
 description = "Private, offline, terminal-first knowledge assistant: local RAG over your PDF/DOCX/PPTX/MD/TXT with verified citations"
 readme = "README.md"
 license = { text = "MIT" }
@@ -37,6 +37,7 @@ dependencies = ["pypdf==6.21.4", "prompt_toolkit==3.0.52"]
 [project.optional-dependencies]
 fast = ["numpy>=1.24"]            # faster vector search on large collections
 crypto = ["cryptography>=42"]     # encrypted backups (bhap backup create --encrypt)
+app = ["pywebview>=5"]            # native window on macOS/Windows (Linux uses GTK/WebKit if present)
 all = ["numpy>=1.24", "cryptography>=42"]
 dev = ["ruff>=0.6", "numpy>=1.24", "cryptography>=42"]
 
@@ -51,6 +52,9 @@ Changelog = "https://github.com/dracofe/Bhap/blob/main/CHANGELOG.md"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.setuptools.package-data]
+bhap = ["web/static/*"]
 
 [tool.ruff]
 line-length = 130

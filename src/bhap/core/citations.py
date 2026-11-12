@@ -53,7 +53,12 @@ def locator(row):
     elif get("page_no"):
         parts.append(t("loc.page_approx" if get("approx") else "loc.page", n=get("page_no")))
     elif get("line_no"):
-        parts.append(t("loc.line", n=get("line_no")))
+        start = get("line_no")
+        text = get("text") or ""
+        if get("kind") == "code" and "\n" in text:  # code is stored verbatim, so the range is exact
+            parts.append(t("loc.line", n=f"{start}–{start + text.count(chr(10))}"))
+        else:
+            parts.append(t("loc.line", n=start))
     kind = get("kind")
     if kind == "notes":
         parts.append(t("loc.footnotes") if get("section_path") in ("Footnotes", "Endnotes") else t("loc.notes"))

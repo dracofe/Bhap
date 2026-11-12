@@ -59,11 +59,16 @@ if ! command -v ollama >/dev/null 2>&1 && [ ! -x "$HOME/.local/opt/ollama/bin/ol
   fi
 fi
 
-# 4. models (Bhap asks before every download; starts Ollama by itself when needed)
+# 4. desktop app shortcut (Linux application menu)
+if [ "$(uname -s)" = "Linux" ] && ask "Add Bhap to your application menu (desktop app)?"; then
+  "$BIN/bhap" app --install-shortcut || true
+fi
+
+# 5. models (Bhap asks before every download; starts Ollama by itself when needed)
 say "Choosing local models"
 if [ "$YES" = 1 ]; then bhap setup --download --yes || true; else bhap setup </dev/tty || true; fi
 
-say "Done. Open a new terminal and run: bhap"
+say "Done. Terminal: run  bhap    ·  Desktop app: run  bhap app  (or open Bhap from your app menu)"
 say "Then: /upload <file>  — and just ask. Works offline once models are downloaded."
 [ "${PATH_HINT:-0}" = 1 ] && warn "Add $BIN to your PATH (fish: fish_add_path ~/.local/bin; bash/zsh: export PATH=\"\$HOME/.local/bin:\$PATH\")"
 exit 0

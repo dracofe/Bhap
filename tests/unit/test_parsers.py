@@ -103,7 +103,9 @@ class ParserTests(BhapTestCase):
         with self.assertRaises(ParseError):
             parse_direct(legacy, {})
         with self.assertRaises(UsageError):
-            parse_direct(self.write("x.exe", "MZ"), {})
+            exe = self.files / "x.exe"
+            exe.write_bytes(b"MZ\x90\x00\x03\x00" * 20)
+            parse_direct(exe, {})
 
     def test_zip_bomb_and_dtd_are_refused(self):
         bomb = self.files / "bomb.docx"

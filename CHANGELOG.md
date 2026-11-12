@@ -2,6 +2,25 @@
 
 All notable changes follow [Semantic Versioning](https://semver.org/).
 
+## 1.2.0 — 2026-11-12
+
+### Added
+- **Desktop app** (`bhap app`): sidebar (new chat, chat history, documents, upload, recents, workspace switcher),
+  greeting home screen with a centred composer (attach, answer-mode picker, send/stop), streaming answers with
+  Markdown, code blocks with copy, clickable citation chips, a source panel that highlights the supporting passage and
+  opens the original file, drag-and-drop uploads with live indexing progress, `/` command picker, light/dark theme,
+  Indonesian/English. Same engine, data and models as the terminal.
+- Runs as a native GTK/WebKit window on Linux (no extra dependency when the system has WebKit2GTK), pywebview on
+  macOS/Windows (`bhap-ai[app]`), Chromium/Edge `--app` windows, or a browser tab as a last resort.
+- Local API bound to 127.0.0.1 with a per-launch token, HttpOnly cookie, Host check and a strict CSP; UI assets are
+  bundled, so the app never loads anything from the internet.
+- `bhap app --install-shortcut` adds Bhap to the Linux application menu; the installer offers it.
+- **Almost any file type**: source code (Java, C/C++, Python, JS/TS, Go, Rust, Kotlin, C#, PHP, SQL, shell, …) with
+  verbatim lines, exact line ranges and class › function sections; archives (ZIP/JAR/TAR/TGZ) indexed member by member
+  with zip-bomb, path-traversal, symlink, binary and nested-archive protection — and `.env`/private keys never indexed;
+  CSV/TSV, JSON(L), HTML/XML, Jupyter notebooks, RTF; XLSX, ODT/ODS/ODP, EPUB; legacy DOC/PPT/XLS through a local
+  LibreOffice; images through local OCR; and any other file whose content is text.
+
 ## 1.1.0 — 2026-11-09
 
 ### Added

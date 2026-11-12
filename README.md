@@ -2,7 +2,7 @@
 
 **Your knowledge. Your machine. Your intelligence.**
 
-Bhap is a private, offline, terminal-first knowledge assistant. Add your PDF, DOCX, PPTX, Markdown and text files; Bhap indexes them locally and a local LLM (Ollama or llama.cpp) answers questions with **citations that point to the real page, slide or section** — even with Wi-Fi off.
+Bhap is a private, offline, terminal-first knowledge assistant. Add your PDFs, Office files, source code (Java, C, Python, …), ZIP archives, notebooks, images and more; Bhap indexes them locally and a local LLM (Ollama or llama.cpp) answers questions with **citations that point to the real page, slide or section** — even with Wi-Fi off.
 
 ```text
 $ cd ~/Kuliah/Semester-3
@@ -91,6 +91,16 @@ bhap study teach "Dijkstra"
 bhap study quiz "Dijkstra" --count 5
 bhap                                          # interactive session
 ```
+
+### Desktop app
+
+```sh
+bhap app                      # opens the Bhap window (same documents, chats and models as the terminal)
+bhap app --install-shortcut   # Linux: add Bhap to your application menu
+```
+
+Sidebar with chats and documents, a composer with upload (+), answer mode and send, clickable citations that open the
+supporting passage, drag-and-drop uploads. Everything runs on `127.0.0.1`; nothing is loaded from the internet.
 
 ### Inside the interactive session
 
